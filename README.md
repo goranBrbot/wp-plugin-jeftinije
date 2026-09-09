@@ -26,11 +26,19 @@ Verified with `phpcs` against the `PHPCompatibilityWP` standard, `testVersion 8.
 - **Fixed the `pluginVersion` value reported in the feed** — [`src/Config/Config.php`](src/Config/Config.php): was hardcoded to `1.0.1`, one behind the actual plugin version; caught while validating the live feed output.
 - **Renamed the plugin and added an `Update URI` header** — [`shoppers_mind.php`](shoppers_mind.php): WordPress derives the "View plugin details" slug from the `Plugin Name` header, and since this fork kept the original name (`Shopper's Mind`), that slug collided with the original plugin's real listing on wordpress.org. WordPress admin was showing *that* plugin's version, changelog, "tested up to" and contributors instead of this fork's — and would have offered an "update" that silently overwrites this fork with the unfixed original. Renaming to `Shopper's Mind (Fork by Goran Brbot)` breaks the collision; the added `Update URI` header is WordPress's own mechanism (since 5.8) for telling core not to check wordpress.org for updates on a fork.
 
+## Building an installable zip
+
+```powershell
+powershell -File scripts\build-zip.ps1
+```
+
+Writes the current runtime files (no `.git`, `vendor/`, `composer.*`, or this README) to `dist/wp-plugin-jeftinije.zip`, ready to upload via Plugins → Add New → Upload Plugin. Re-run it after any code change to keep `dist/` at the latest version; the zip itself is git-ignored, so it's always a local build, not a stale committed copy.
+
 ## Development
 
 Dev tooling (`squizlabs/php_codesniffer` + `phpcompatibility/phpcompatibility-wp`) is declared in `composer.json` as dev dependencies only — not required at plugin runtime, and `vendor/` is git-ignored.
 
-```
+```bash
 composer install
 vendor/bin/phpcs --standard=PHPCompatibilityWP --runtime-set testVersion 8.1- shoppers_mind.php src/
 ```
