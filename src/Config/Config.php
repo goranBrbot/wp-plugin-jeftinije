@@ -8,7 +8,7 @@ class Config
 {
 
     public static $pluginSlug = 'shoppersMind';
-    public static $pluginVersion = '1.0.2';
+    public static $pluginVersion = '1.0.3';
     public static $scripts = array();
     public static $export = array();
 

@@ -23,6 +23,8 @@ Verified with `phpcs` against the `PHPCompatibilityWP` standard, `testVersion 8.
   - `wc_get_attribute()` when a configured attribute ID no longer exists.
   - A product with no assigned category (indexing an empty array).
 - **Raised `Requires PHP` to 8.1** in the plugin header and `readme.txt`.
+- **Fixed the `pluginVersion` value reported in the feed** — [`src/Config/Config.php`](src/Config/Config.php): was hardcoded to `1.0.1`, one behind the actual plugin version; caught while validating the live feed output.
+- **Renamed the plugin and added an `Update URI` header** — [`shoppers_mind.php`](shoppers_mind.php): WordPress derives the "View plugin details" slug from the `Plugin Name` header, and since this fork kept the original name (`Shopper's Mind`), that slug collided with the original plugin's real listing on wordpress.org. WordPress admin was showing *that* plugin's version, changelog, "tested up to" and contributors instead of this fork's — and would have offered an "update" that silently overwrites this fork with the unfixed original. Renaming to `Shopper's Mind (Fork by Goran Brbot)` breaks the collision; the added `Update URI` header is WordPress's own mechanism (since 5.8) for telling core not to check wordpress.org for updates on a fork.
 
 ## Development
 
