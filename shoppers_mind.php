@@ -3,9 +3,10 @@
 /**
  * Plugin Name:       Shopper's Mind (Fork by Goran Brbot)
  * Description:       Export your Woocommerce products (generate XML file) to Shopper's Mind comparison shopping platforms (ceneje.si, jeftinije.hr, idealno.rs, idealno.ba), add CERTIFIED SHOP® Trustmark and much more. Fork maintained at github.com/goranBrbot/wp-plugin-jeftinije, updated for PHP 8.1+/current WordPress.
- * Version:           1.0.3
+ * Version:           1.0.4
  * Requires at least: 4.4.0
  * Requires PHP:      8.1
+ * Requires Plugins:  woocommerce
  * Author:            Shopper's Mind
  * Author URI:        https://smind.si
  * Update URI:        https://github.com/goranBrbot/wp-plugin-jeftinije
@@ -31,6 +32,24 @@ Copyright 2016 - 2021 Shopper's Mind
 */
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+
+// Declare compatibility with WooCommerce High-Performance Order Storage (custom order tables).
+// This plugin never reads/writes order data, but WooCommerce still warns about undeclared plugins.
+add_action('before_woocommerce_init', function () {
+  if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+    \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__);
+  }
+});
+
+// WooCommerce is a hard dependency (the export feed and settings page both call wc_* functions).
+// The "Requires Plugins" header above blocks activation without it; this handles the case where
+// WooCommerce is deactivated afterwards, so we degrade to an admin notice instead of a fatal error.
+if (!class_exists('WooCommerce')) {
+  add_action('admin_notices', function () {
+    echo '<div class="notice notice-error"><p>' . esc_html__("Shopper's Mind (Fork by Goran Brbot) requires WooCommerce to be active.", 'wp-plugin-jeftinije') . '</p></div>';
+  });
+  return;
+}
 
 require_once  plugin_dir_path(__FILE__) . 'src/Helpers/Helper.php';
 require_once  plugin_dir_path(__FILE__) . 'src/Config/Config.php';

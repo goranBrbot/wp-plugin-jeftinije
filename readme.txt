@@ -3,7 +3,7 @@ Contributors: cenejewebmaster, miloskostadinovski, goranbrbot
 Requires at least: 4.4.0
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 
@@ -19,6 +19,16 @@ This fork is maintained independently of the original wordpress.org listing by G
 Copyright 2016 - 2021 Shopper's Mind
 
 == Changelog ==
+
+= 1.0.4 =
+* Fixed a fatal error on every wp-admin page if WooCommerce is deactivated while this plugin stays active: the settings-page bootstrap ran unconditionally on the global `admin_init` hook and called WooCommerce functions with no guard. Now the entire plugin bootstrap short-circuits (with an admin notice instead) when WooCommerce isn't active.
+* Added a `Requires Plugins: woocommerce` header so WordPress blocks activation without WooCommerce present, and declared compatibility with WooCommerce High-Performance Order Storage (custom order tables) — the plugin never touches order data, but WooCommerce warns about undeclared plugins otherwise.
+* Fixed a `wp_enqueue_script()` call using the wrong argument (passed a dependency array as the `$src` parameter), which silently corrupted the registered admin script and never actually declared the jQuery dependency it needs.
+* Escaped the widget title output (`esc_html`) and an admin-settings help link (`esc_url`) that were missing output escaping.
+* Changed the settings page's required capability from the role name `administrator` to the actual capability `manage_options`, per WordPress capability-check best practice.
+* Fixed the XML feed URL setting to sanitize as a safe REST route segment instead of general-purpose text.
+* Fixed three settings-sanitization callbacks that wiped a setting back to empty on invalid input instead of keeping the previous value.
+* Renamed the widget class to match its filename (`CsTrustmarkWidget`) for consistency.
 
 = 1.0.3 =
 * Forked and adapted by Goran Brbot (@goranBrbot) for PHP 8.1+ / current WordPress compatibility: https://github.com/goranBrbot/wp-plugin-jeftinije

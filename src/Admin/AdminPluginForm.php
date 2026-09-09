@@ -9,7 +9,7 @@ function ceneje_plugin_menu()
   add_menu_page(
     "Shopper's mind",                  // The title to be displayed in the browser window for this page.
     "Shopper's mind",                  // The text to be displayed for this menu item
-    'administrator',                   // Which type of users can see this menu item
+    'manage_options',                  // Which type of users can see this menu item
     'ceneje_export_plugin_options',    // The unique ID - that is, the slug - for this menu item
     'ceneje_export_plugin_display'     // The name of the function to call when rendering the page for this menu
   );
@@ -206,7 +206,7 @@ function ceneje_settings_api_init()
     'ceneje_plugin_export_setting_section'
   );
 
-  register_setting('ceneje_export_plugin_options', 'ceneje_xml_url', 'ceneje_sanitize_string_input');
+  register_setting('ceneje_export_plugin_options', 'ceneje_xml_url', 'ceneje_sanitize_route_input');
   register_setting('ceneje_export_plugin_options', 'ceneje_exclude_out_of_stock', 'ceneje_sanitize_bool_input');
   register_setting('ceneje_export_plugin_options', 'ceneje_gender_attribute', 'ceneje_sanitize_wc_attribute_input');
   register_setting('ceneje_export_plugin_options', 'ceneje_color_attribute', 'ceneje_sanitize_string_input');
@@ -250,7 +250,7 @@ function ceneje_plugin_shop_id_setting_callback_function()
 
 function ceneje_plugin_badge_enabled_setting_callback_function()
 {
-  $link = Helper::getWidgetSectionUrl();
+  $link = esc_url(Helper::getWidgetSectionUrl());
   $link = "<a href='$link'>\"Widgets\" section</a>";
   echo '<input name="ceneje_badge_enabled" id="ceneje_badge_enabled" type="checkbox" value="1" class="code" ' . checked(1, esc_attr(get_option('ceneje_badge_enabled')), false) . ' />';
   echo " Define where to put your Trustmark on your website in $link.";
@@ -371,12 +371,27 @@ function ceneje_plugin_delivery_time_max_setting_callback_function()
 // Callback functions for validating and sanitizing input functions
 // ------------------------------------------------------------------
 // 
-function ceneje_sanitize_string_input($input) 
+function ceneje_sanitize_string_input($input)
 {
   return sanitize_text_field(stripslashes($input));
 }
 
-function ceneje_sanitize_number_input($input) 
+// Used for the REST route path segment (register_rest_route()), so it's restricted to
+// characters that are safe there instead of general-purpose text sanitization.
+function ceneje_sanitize_route_input($input)
+{
+  return preg_replace('#[^a-zA-Z0-9/_-]#', '', sanitize_text_field(stripslashes($input)));
+}
+
+// On invalid input, fall back to the previously stored value instead of wiping the setting
+// (register_setting() hooks this to the sanitize_option_{$option} filter, so current_filter()
+// reliably gives us the option name to look up).
+function ceneje_previous_option_value()
+{
+  return get_option(str_replace('sanitize_option_', '', current_filter()));
+}
+
+function ceneje_sanitize_number_input($input)
 {
   if (!empty($input) && (!intval($input) || $input < 1))
   {
@@ -386,9 +401,9 @@ function ceneje_sanitize_number_input($input)
       'Only positive numbers allowed',
       'error'
     );
-    return;
+    return ceneje_previous_option_value();
   }
-  
+
   return sanitize_text_field(stripslashes($input));
 }
 
@@ -402,9 +417,9 @@ function ceneje_sanitize_bool_input($input)
       'Only boolean values allowed',
       'error'
     );
-    return;
+    return ceneje_previous_option_value();
   }
-  
+
   return sanitize_text_field(stripslashes($input));
 }
 
@@ -423,8 +438,8 @@ function ceneje_sanitize_wc_attribute_input($input)
       'Only existing attribute values allowed',
       'error'
     );
-    return;
+    return ceneje_previous_option_value();
   }
-  
+
   return sanitize_text_field(stripslashes($input));
 }

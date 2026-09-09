@@ -5,7 +5,7 @@ namespace Ceneje\Widgets;
 
 use Ceneje\Config\Config;
 
-class TrustmarkWidget extends \WP_Widget
+class CsTrustmarkWidget extends \WP_Widget
 {
   function __construct()
   {
@@ -24,7 +24,7 @@ class TrustmarkWidget extends \WP_Widget
   {
     echo $args['before_widget'];
     if (!empty($instance['title'])) {
-      echo $args['before_title'] . apply_filters('widget_title', $instance['title']) . $args['after_title'];
+      echo $args['before_title'] . esc_html(apply_filters('widget_title', $instance['title'])) . $args['after_title'];
     }
     echo '<div class="smdWrapperTag"></div>';
     echo $args['after_widget'];

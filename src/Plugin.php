@@ -38,14 +38,14 @@ class Plugin
 
         // Register widgets
         add_action('widgets_init', function () {
-            register_widget('Ceneje\Widgets\TrustmarkWidget');
+            register_widget('Ceneje\Widgets\CsTrustmarkWidget');
         });
 
         // Enqueue admin scripts
         add_action('admin_enqueue_scripts', function () {
             $scriptName = Config::$pluginSlug . 'csAdmin';
-            wp_register_script($scriptName, Helper::asset('/js/admin/csAdmin.js'), null, 1.0, true);
-            wp_enqueue_script($scriptName, array('jquery'));
+            wp_register_script($scriptName, Helper::asset('/js/admin/csAdmin.js'), array('jquery'), '1.0', true);
+            wp_enqueue_script($scriptName);
             $data = array(
                 'xmlFeedUrl' => Helper::getXmlFeedUrlPrefix()
             );
