@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       Shopper's Mind (Fork by Goran Brbot)
- * Description:       Export your Woocommerce products (generate XML file) to Shopper's Mind comparison shopping platforms (ceneje.si, jeftinije.hr, idealno.rs, idealno.ba), add CERTIFIED SHOP® Trustmark and much more. Fork maintained at github.com/goranBrbot/wp-plugin-jeftinije, updated for PHP 8.1+/current WordPress.
+ * Description:       Export your Woocommerce products (generate XML file) to Shopper's Mind comparison shopping platforms (ceneje.si, jeftinije.hr, idealno.rs, idealno.ba), add CERTIFIED SHOP® Trustmark and much more. Fork maintained at github.com/goranBrbot/wp-plugin-jeftinije.<br>Datum ažuriranja verzije: 2026-09-09 | PHP i WordPress zahtjevi - kompatibilnost: PHP 8.1+, WordPress 4.4+ (testirano do 7.1).
  * Version:           1.0.4
  * Requires at least: 4.4.0
  * Requires PHP:      8.1
