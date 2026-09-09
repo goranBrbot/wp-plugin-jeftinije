@@ -11,7 +11,11 @@ An older custom `page-jeftinije.php` export script was audited for compatibility
 
 Shopper's Mind already solves both: it registers a WordPress **REST API** route (theme-independent) and consistently uses `get_terms()`/`get_options()` for attributes. Rather than rewrite a plugin from scratch, this fork takes Shopper's Mind's source (last released ~2021, PHP 5.2+) and brings it up to date instead.
 
-## Changes made in this fork
+## Changelog
+
+Changes are grouped by the plugin version they shipped in (matches `readme.txt`) — append a new `###` subsection here for each future version rather than one flat list, so it stays clear what happened when.
+
+### 1.0.3 — initial fork release
 
 Verified with `phpcs` against the `PHPCompatibilityWP` standard, `testVersion 8.1-` (zero findings) plus manual review:
 
@@ -26,7 +30,7 @@ Verified with `phpcs` against the `PHPCompatibilityWP` standard, `testVersion 8.
 - **Fixed the `pluginVersion` value reported in the feed** — [`src/Config/Config.php`](src/Config/Config.php): was hardcoded to `1.0.1`, one behind the actual plugin version; caught while validating the live feed output.
 - **Renamed the plugin and added an `Update URI` header** — [`shoppers_mind.php`](shoppers_mind.php): WordPress derives the "View plugin details" slug from the `Plugin Name` header, and since this fork kept the original name (`Shopper's Mind`), that slug collided with the original plugin's real listing on wordpress.org. WordPress admin was showing *that* plugin's version, changelog, "tested up to" and contributors instead of this fork's — and would have offered an "update" that silently overwrites this fork with the unfixed original. Renaming to `Shopper's Mind (Fork by Goran Brbot)` breaks the collision; the added `Update URI` header is WordPress's own mechanism (since 5.8) for telling core not to check wordpress.org for updates on a fork.
 
-## Full audit pass (1.0.4)
+### 1.0.4 — full audit pass
 
 A follow-up pass reviewed the remaining parts of the plugin not touched by the initial fork work (admin settings, widget, script enqueueing, plugin header) for 2026-era WordPress/WooCommerce standards:
 
@@ -39,8 +43,9 @@ A follow-up pass reviewed the remaining parts of the plugin not touched by the i
 - **Tightened sanitization of the XML feed URL setting** to a safe REST-route character set, since it's passed directly as a `register_rest_route()` path segment.
 - **Fixed three sanitize callbacks that wiped a setting to empty on invalid input** instead of keeping the previously stored value.
 - **Renamed the widget class to `CsTrustmarkWidget`** to match its filename (it was `TrustmarkWidget`), for consistency now that the codebase doesn't use PSR-4 autoloading.
+- **Reworked the plugin `Description` header** — [`shoppers_mind.php`](shoppers_mind.php): removed a phrase duplicating the `Requires PHP`/`Requires at least` headers, and added a dedicated line (via `<br>`, which WordPress's plugin-list rendering allows) showing the last-updated date and a PHP/WordPress compatibility summary.
 
-Intentionally left as-is: i18n (no `Text Domain`/`__()` wrapping — this is an internal single-site fork, not slated for wordpress.org) and switching the manual `require_once` chain to Composer's PSR-4 autoloading (no functional benefit for a plugin this size).
+One `esc_html__()` call was added (the WooCommerce-inactive admin notice, text domain `wp-plugin-jeftinije`), but there's no `Text Domain` header or `load_plugin_textdomain()` call, so it can't actually load a translation yet — full i18n (declaring the text domain and wrapping the rest of the admin UI strings) is intentionally still skipped, since this is an internal single-site fork, not slated for wordpress.org. Also intentionally left as-is: switching the manual `require_once` chain to Composer's PSR-4 autoloading (no functional benefit for a plugin this size).
 
 ## Building an installable zip
 
