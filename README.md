@@ -50,6 +50,8 @@ powershell -File scripts\build-zip.ps1
 
 Writes the current runtime files (no `.git`, `vendor/`, `composer.*`, or this README) to `dist/wp-plugin-jeftinije.zip`, ready to upload via Plugins → Add New → Upload Plugin. Re-run it after any code change to keep `dist/` at the latest version; the zip itself is git-ignored, so it's always a local build, not a stale committed copy.
 
+The script also stamps today's date into the "Datum ažuriranja verzije" line of the plugin's `Description` header in `shoppers_mind.php` before zipping, so that date always reflects when the zip was actually built.
+
 ## Development
 
 Dev tooling (`squizlabs/php_codesniffer` + `phpcompatibility/phpcompatibility-wp`) is declared in `composer.json` as dev dependencies only — not required at plugin runtime, and `vendor/` is git-ignored.

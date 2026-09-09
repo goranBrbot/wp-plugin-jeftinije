@@ -29,6 +29,16 @@ if ([System.IO.File]::Exists($outZip)) {
     [System.IO.File]::Delete($outZip)
 }
 
+# Stamp the plugin header's "Datum azuriranja verzije" with today's date.
+# Read/write as UTF-8 without BOM explicitly: shoppers_mind.php starts with
+# "<?php" and a BOM before that would break the plugin (output before headers).
+$mainFile = Join-Path $root "shoppers_mind.php"
+$today = Get-Date -Format "yyyy-MM-dd"
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+$content = [System.IO.File]::ReadAllText($mainFile, [System.Text.Encoding]::UTF8)
+$content = [System.Text.RegularExpressions.Regex]::Replace($content, 'verzije:\s*\d{4}-\d{2}-\d{2}', "verzije: $today")
+[System.IO.File]::WriteAllText($mainFile, $content, $utf8NoBom)
+
 $files = Get-ChildItem -Path $root -Recurse -File | Where-Object {
     $relative = $_.FullName.Substring($root.Length + 1)
     $topSegment = $relative.Split([System.IO.Path]::DirectorySeparatorChar)[0]
